@@ -1,0 +1,54 @@
+---
+title: "Diagrama de Proceso de Equipos de Computo"
+Autor: "Juan Camilo Montealegre Tamayo"
+date: "2025-02-27"
+output: html_document
+---
+
+# Planteamiento del Problema
+
+Una empresa de ensamblaje de equipos de computo desea saber si, basados en sus tiempos medios por tarea, La inversión en el mejoramiento de la tarea **E** represeta un mejoramiento estadísticamente significativo que compense la inversión asociada. Ya que, con base en el diagrama la tarea *E* no se encuentra en la ruta crítcia.
+
+Consideraciones iniciales:
+
+- Se conoce los valores medios del tiempo de realización de las tareas a ejecutar y que, cada tarea dentro del proceso se distribuye de forma exponencial.
+
+- Se sabe que la ruta crítica está dada por la tareas:
+
+- Dado que niguna de las tareas es determinística es posible encontrar diferencias significativas para el proceso en general, ya que, puede hallarse que la distribución general del proceso se reajuste y genere un valor medio significativamente menor.
+
+- De las tareas se conocen su distribución y su valor medio. La nueva máquina nueva para la tarea *E* tiene una distribución similar (exponecial) con un valor medio de 3.6. Para establecer un criterio de beneficio de la máquina se van a realizar 1000 simulaciones del proceso.
+
+- Las tareas en paralelo son semejantes y cuentan con el mismo tiempo medio.
+
+```{r message=FALSE}
+# Librerías
+library(magick)
+library(knitr)
+library(kableExtra)
+library(tidyverse)
+```
+
+
+```{r setup, eval=TRUE, include=TRUE, out.width='80%', fig.cap= "*Nota*: el diagrama de proceso fue tomado del siguiente enlace: https://dharmacon.net/2023/07/05/descifrando-el-rendimiento-del-proyecto-con-el-diagrama-de-tiempo-de-ciclo/"}
+
+# Formato png de la imagen
+img <- image_read("digrama_proceso_gantt.PNG")  
+image_write(img, path = "digrama_proceso_gantt.png", format = "png")
+
+# Cargar imagen
+knitr::include_graphics("digrama_proceso_gantt.PNG")
+```
+
+```{r , warning=FALSE, include=TRUE, fig.cap= "*Nota*: "}
+dfTiempoMedios <- data_frame(id_tarea = LETTERS[1:11], tiempo_medio = c(4, 10, 4.6, 15, 4.3, 4, 4, 3.8, 4, 4.6, 3)) 
+dfTiempoMedios %>% 
+  kable(format = "html", digits = 2, caption = "Tabla 1. Tiempos Medios de las Tareas", col.names = c('id Tarea', 'Tiempo Medio')) %>%
+  kable_styling(full_width = FALSE, position = "center", font_size = 12) %>%
+  column_spec(1, bold = FALSE) %>% 
+  footnote(general_title = "Note:", general = "algunas tareas se ejecutan en paralelo y tienen valores similares")
+
+```
+
+
+
