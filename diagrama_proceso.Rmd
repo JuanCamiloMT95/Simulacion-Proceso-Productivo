@@ -33,22 +33,25 @@ library(tidyverse)
 ```{r setup, eval=TRUE, include=TRUE, out.width='80%', fig.cap= "*Nota*: el diagrama de proceso fue tomado del siguiente enlace: https://dharmacon.net/2023/07/05/descifrando-el-rendimiento-del-proyecto-con-el-diagrama-de-tiempo-de-ciclo/"}
 
 # Formato png de la imagen
-img <- image_read("digrama_proceso_gantt.PNG")  
-image_write(img, path = "digrama_proceso_gantt.png", format = "png")
+img <- image_read("diagrama_proceso.PNG")  
+image_write(img, path = "diagrama_proceso.png", format = "png")
 
 # Cargar imagen
-knitr::include_graphics("digrama_proceso_gantt.PNG")
+knitr::include_graphics("diagrama_proceso.PNG")
 ```
 
-```{r , warning=FALSE, include=TRUE, fig.cap= "*Nota*: "}
-dfTiempoMedios <- data_frame(id_tarea = LETTERS[1:11], tiempo_medio = c(4, 10, 4.6, 15, 4.3, 4, 4, 3.8, 4, 4.6, 3)) 
+```{r , warning=FALSE, include=TRUE}
+dfTiempoMedios <- data_frame(id_tarea = LETTERS[1:11], tiempo_medio = c(4, 10, 4.6, 15, 4.3, 4, 4, 3.8, 4, 4.6, 3), varianza = c(1.9, 1.4, 2.0, 1.1, 2.1, 2.0, 2.2, 2.3, 3.0, 2.1, 2.7)) 
 dfTiempoMedios %>% 
-  kable(format = "html", digits = 2, caption = "Tabla 1. Tiempos Medios de las Tareas", col.names = c('id Tarea', 'Tiempo Medio')) %>%
+  kable(format = "html", digits = 2, caption = "Tabla 1. Tiempos Medios de las Tareas", col.names = c('id Tarea', 'Tiempo Medio', 'Varianza')) %>%
   kable_styling(full_width = FALSE, position = "center", font_size = 12) %>%
   column_spec(1, bold = FALSE) %>% 
-  footnote(general_title = "Note:", general = "algunas tareas se ejecutan en paralelo y tienen valores similares")
+  footnote(general_title = "Nota:", general = "algunas tareas se ejecutan en paralelo y tienen valores similares")
 
 ```
 
 
+```{r}
+
+```
 
