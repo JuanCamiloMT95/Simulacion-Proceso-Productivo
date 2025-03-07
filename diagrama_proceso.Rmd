@@ -41,7 +41,10 @@ knitr::include_graphics("diagrama_proceso.PNG")
 ```
 
 ```{r , warning=FALSE, include=TRUE}
-dfTiempoMedios <- data_frame(id_tarea = LETTERS[1:11], tiempo_medio = c(4, 10, 4.6, 15, 4.3, 4, 4, 3.8, 4, 4.6, 3), varianza = c(1.9, 1.4, 2.0, 1.1, 2.1, 2.0, 2.2, 2.3, 3.0, 2.1, 2.7)) 
+#Data Frame
+dfTiempoMedios <- data_frame(id_tarea = LETTERS[1:11], tiempo_medio = c(4, 10, 4.6, 15, 4.3, 4, 4, 3.8, 4, 4.6, 3), varianza = c(1.9, 1.4, 2.0, 1.1, 2.1, 2.0, 2.2, 2.3, 3.0, 2.1, 2.7))
+
+# Visualización de Tabla
 dfTiempoMedios %>% 
   kable(format = "html", digits = 2, caption = "Tabla 1. Tiempos Medios de las Tareas", col.names = c('id Tarea', 'Tiempo Medio', 'Varianza')) %>%
   kable_styling(full_width = FALSE, position = "center", font_size = 12) %>%
@@ -52,6 +55,37 @@ dfTiempoMedios %>%
 
 
 ```{r}
+# df del predecesor.
+dfPredecesor <- data_frame(predecesor = c("A", "B", "C", "I", "J", "D", "E", "I", 
+                                          "J", "F", "G", "H", "I", "J"), sucesor =
+                             c("B", "C", "I", "J", "K", "E", "I", "J", "K", 
+                               "G", "H", "I", "J", "K"))
+# df del proceso.
+library(truncnorm)
+
+
+```
+
+```{r}
+# Fijar semilla 
+#set.seed(3942)
+set.seed(NULL)
+reps <- 5
+
+dfEscenarioA <- data_frame(escenario = rep("A", reps), salida = NA)
+
+for(k in 1:reps){
+  #df del proceso
+  dfProceso <- data_frame(id = LETTERS[1:11], 
+                          tiempo = rtruncnorm(n = 1, a = 0, b = Inf, 
+                                              mean = dfTiempoMedios$tiempo_medio,
+                                              sd = dfTiempoMedios$varianza), 
+                          estado = 0,
+                          iniTiem = NA, 
+                          finTiem = NA)
+  dfEscenarioA$salida[k] <- SimulacionProceso(dfPoceso, dfPredecesor)
+  print(dfEscenarioA)
+}
 
 ```
 
