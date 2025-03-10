@@ -7,17 +7,17 @@ output: html_document
 
 # Planteamiento del Problema
 
-Una empresa de ensamblaje de equipos de computo desea saber si, basados en sus tiempos medios por tarea, La inversión en el mejoramiento de la tarea **E** represeta un mejoramiento estadísticamente significativo que compense la inversión asociada. Ya que, con base en el diagrama la tarea *E* no se encuentra en la ruta crítcia.
+Una empresa de ensamblaje de equipos de computo desea saber si, basados en sus tiempos medios y su varianza por tarea. La inversión en el mejoramiento de la tarea *E* represeta un mejoramiento estadísticamente significativo que compense la inversión asociada. Ya que, con base en el diagrama la tarea *E* no se encuentra en la ruta crítcia.
 
 Consideraciones iniciales:
 
-- Se conoce los valores medios del tiempo de realización de las tareas a ejecutar y que, cada tarea dentro del proceso se distribuye de forma exponencial.
+- Se conoce los valores medios del tiempo y la varianza de realización de las tareas a ejecutar y que, cada tarea dentro del proceso se distribuye de forma normal.
 
-- Se sabe que la ruta crítica está dada por la tareas:
+- Se sabe que la ruta crítica está dada por la tareas: A, B, C, I, J, K
 
 - Dado que niguna de las tareas es determinística es posible encontrar diferencias significativas para el proceso en general, ya que, puede hallarse que la distribución general del proceso se reajuste y genere un valor medio significativamente menor.
 
-- De las tareas se conocen su distribución y su valor medio. La nueva máquina nueva para la tarea *E* tiene una distribución similar (exponecial) con un valor medio de 3.6. Para establecer un criterio de beneficio de la máquina se van a realizar 1000 simulaciones del proceso.
+- De las tareas se conocen su distribución, valor medio y varianza. La nueva máquina para la tarea *E* tiene una distribución similar (normal) con un valor medio de 3.6 [min]. Para establecer un criterio del beneficio de la máquina se van a realizar 1000 simulaciones del proceso.
 
 - Las tareas en paralelo son semejantes y cuentan con el mismo tiempo medio.
 
@@ -27,6 +27,8 @@ library(magick)
 library(knitr)
 library(kableExtra)
 library(tidyverse)
+library(nortest)
+source("SimulacionProceso.R")
 ```
 
 
@@ -42,11 +44,11 @@ knitr::include_graphics("diagrama_proceso.PNG")
 
 ```{r , warning=FALSE, include=TRUE}
 #Data Frame
-dfTiempoMedios <- data_frame(id_tarea = LETTERS[1:11], tiempo_medio = c(4, 10, 4.6, 15, 4.3, 4, 4, 3.8, 4, 4.6, 3), varianza = c(1.9, 1.4, 2.0, 1.1, 2.1, 2.0, 2.2, 2.3, 3.0, 2.1, 2.7))
+dfTiempoMedios <- data_frame(id_tarea = LETTERS[1:11], tiempo_medio = c(4, 10, 4.6, 15, 4.3, 4, 4, 3.8, 4, 4.6, 3), sd = c(1.9, 1.4, 2.0, 1.1, 2.1, 2.0, 2.2, 2.3, 3.0, 2.1, 2.7))
 
 # Visualización de Tabla
 dfTiempoMedios %>% 
-  kable(format = "html", digits = 2, caption = "Tabla 1. Tiempos Medios de las Tareas", col.names = c('id Tarea', 'Tiempo Medio', 'Varianza')) %>%
+  kable(format = "html", digits = 2, caption = "Tabla 1. Tiempos Medios de las Tareas", col.names = c('id Tarea', 'Tiempo Medio', 'Sd')) %>%
   kable_styling(full_width = FALSE, position = "center", font_size = 12) %>%
   column_spec(1, bold = FALSE) %>% 
   footnote(general_title = "Nota:", general = "algunas tareas se ejecutan en paralelo y tienen valores similares")
@@ -66,11 +68,22 @@ library(truncnorm)
 
 ```
 
+# Simulación
+
+Para la generación de los valores pseudo-aleatorios normales se va a emplear un función de distribución truncada, ya que, en un proceso real los valores negativos no existen y es posible que los modelos normales generados entreguen valores negativos por lo que el límite inferior es cero. Para la prueba se realizan 1000 simulaciones.
+
+Por probabilidad sabemos que: la suma de $n$ variables aleatorias con distribución normal e independientes se define como: 
+$$S = X_1 + X_2 +... X_n$$
+Por lo tanto, la nueva variable aleatoria $S$ sigue una distribución normal definida como:
+$$S \thicksim N(\mu_S, \sigma_S)$$
+
+## Simulación Escenario A
+
 ```{r}
 # Fijar semilla 
 #set.seed(3942)
-set.seed(NULL)
-reps <- 5
+set.seed(88329)
+reps <- 1000
 
 dfEscenarioA <- data_frame(escenario = rep("A", reps), salida = NA)
 
@@ -79,13 +92,72 @@ for(k in 1:reps){
   dfProceso <- data_frame(id = LETTERS[1:11], 
                           tiempo = rtruncnorm(n = 1, a = 0, b = Inf, 
                                               mean = dfTiempoMedios$tiempo_medio,
-                                              sd = dfTiempoMedios$varianza), 
+                                              sd = dfTiempoMedios$sd), 
                           estado = 0,
                           iniTiem = NA, 
                           finTiem = NA)
   dfEscenarioA$salida[k] <- SimulacionProceso(dfPoceso, dfPredecesor)
-  print(dfEscenarioA)
 }
 
 ```
+
+## Prueba de Hipótesis de Normalidad de la Salida del Proceso (Escenario A)
+
+- $H_0$ Los tiempos de salida del proceso en el escenario A se distribuyen de forma normal.
+- $H_1$ Los tiempos de salida del proceso en el escenario A no se distribuyen de forma normal.
+
+```{r}
+#Prueba de Normalidad Anderson-Darling
+NormTestAD_A <- ad.test(dfEscenarioA$salida)
+pValueAD_A <- NormTestAD_A[["p.value"]]
+estadisticoAD_A <- NormTestAD_A[["statistic"]][["A"]]
+```
+
+
+Dado qué $p_{value}$ es mayor al nivel de significancia $\alpha$, $`r pValueAD_A` > 0.05$. Se concluye que se hacepta la hipótesis nula ($H_0$) de que los tiempos al final del proceso de ensamblaje de equipos de computo se distribuyen de forma normal.
+
+## Simulación Escenario B
+
+La máquina para la tarea E se estima que tiene un tiempo medio de 3.6 y desviación estandar de 2.
+
+```{r}
+# Fijar semilla 
+#set.seed(3942)
+set.seed(66456)
+reps <- 1000
+
+dfEscenarioB <- data_frame(escenario = rep("B", reps), salida = NA)
+dfTiempoMedios[dfTiempoMedios$id_tarea == "E",c(2,3)] <- t(c(3.6, 2))
+
+for(k in 1:reps){
+  #df del proceso
+  dfProceso <- data_frame(id = LETTERS[1:11], 
+                          tiempo = rtruncnorm(n = 1, a = 0, b = Inf, 
+                                              mean = dfTiempoMedios$tiempo_medio,
+                                              sd = dfTiempoMedios$sd), 
+                          estado = 0,
+                          iniTiem = NA, 
+                          finTiem = NA)
+  dfEscenarioB$salida[k] <- SimulacionProceso(dfPoceso, dfPredecesor)
+}
+
+```
+
+## Prueba de Hipótesis de Normalidad de la Salida del Proceso (Escenario B)
+
+- $H_0$ Los tiempos de salida del proceso en el escenario B se distribuyen de forma normal.
+- $H_1$ Los tiempos de salida del proceso en el escenario B no se distribuyen de forma normal.
+
+```{r}
+#Prueba de Normalidad Anderson-Darling
+NormTestAD_B <- ad.test(dfEscenarioB$salida)
+pValueAD_B <- NormTestAD_B[["p.value"]]
+estadisticoAD_B <- NormTestAD_B[["statistic"]][["A"]]
+```
+Para el escenario B el $p_{value}$ es mayor al nivel de significancia $\alpha$, $`r pValueAD_B` > 0.05$ Por lo que no hay evidencia suficiente para rechazar la hipótesis nula $H_0$ de que los tiempos al final del proceso de ensamblaje de equipos de computo mejorando el tiempo de la tarea *E* se distribuyen de forma normal.
+
+
+
+
+
 
