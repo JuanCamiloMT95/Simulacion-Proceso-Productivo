@@ -28,6 +28,7 @@ library(knitr)
 library(kableExtra)
 library(tidyverse)
 library(nortest)
+library(car)
 source("SimulacionProceso.R")
 ```
 
@@ -156,8 +157,46 @@ estadisticoAD_B <- NormTestAD_B[["statistic"]][["A"]]
 ```
 Para el escenario B el $p_{value}$ es mayor al nivel de significancia $\alpha$, $`r pValueAD_B` > 0.05$ Por lo que no hay evidencia suficiente para rechazar la hipótesis nula $H_0$ de que los tiempos al final del proceso de ensamblaje de equipos de computo mejorando el tiempo de la tarea *E* se distribuyen de forma normal.
 
+# Gráficas
 
+## Gráfica Q-Q
 
+```{r}
+par(mfrow = c(1,2))
+qqPlot(x = dfEscenarioA$salida, distribution = "norm", main = "Q-Q Escenario A", xlab = "Cuantiles Nomales", ylab = "Salida")
+qqPlot(x = dfEscenarioB$salida, distribution = "norm", main = "Q-Q Escenario B", xlab = "Cuantiles Nomales", ylab = "Salida")
+
+```
+
+En ambos casos tanto para el escenario A como el B hay algunas discrepancias con la normal estandar en las colas de la distribución pero no interfiere con el tipo de análisis que buscamos realizar con la simulación,
+
+## Histograma y Densidad
+
+```{r}
+# Df total
+dfTotal <- rbind(dfEscenarioA, dfEscenarioB)
+
+ggplot(dfTotal, aes(salida)) + 
+  facet_wrap(~escenario) + 
+  geom_histogram(aes(y=..density..), colour = "black", fill = "white") + # ..density.. normaliza el histograma para compararlo con la densidad.
+  geom_density(color = "blue", lwd = 1) +
+  stat_function(fun = dnorm, args = list(mean= mean(dfEscenarioA$salida), sd= sd(dfEscenarioA$salida)), color = "red", linewidth = 0.7) +
+  scale_color_manual(values = c("Distribución empírica" = "blue", "Distribución teórica" = "red")) +
+  theme_light()
+```
+
+Con la distribución teórica (linea roja) con media y desviación estandar basada en los datos y la distribución empírica (linea azul), visualmente se puede considerar una distribución normalde los datos. Sin embargo, hay que considerar las demás pruebas tanto gráficas como pruebas normales, ya que, las pruebas gráficas están sujetas a los ajustes del kernel.
+
+## Diagrama de Caja
+
+```{r}
+ggplot(dfTotal, aes(salida)) +
+  facet_wrap(~escenario) + 
+  geom_boxplot() +
+  theme_light()
+```
+
+Para ambos escenarios presenta unos puntos atípicos en concordancia con el q-q plot que muestra algunas discrepancias en las colas de los datos con la normal.
 
 
 
