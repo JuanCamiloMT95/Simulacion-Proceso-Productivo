@@ -177,7 +177,7 @@ En ambos casos tanto para el escenario A como el B hay algunas discrepancias con
 dfTotal <- rbind(dfEscenarioA, dfEscenarioB)
 
 ggplot(dfTotal, aes(salida)) + 
-  facet_wrap(~escenario) + 
+  facet_wrap(~escenario, ncol = 1) + 
   geom_histogram(aes(y=..density..), colour = "black", fill = "white") + # ..density.. normaliza el histograma para compararlo con la densidad.
   geom_density(color = "blue", lwd = 1) +
   stat_function(fun = dnorm, args = list(mean= mean(dfEscenarioA$salida), sd= sd(dfEscenarioA$salida)), color = "red", linewidth = 0.7) +
@@ -191,12 +191,36 @@ Con la distribución teórica (linea roja) con media y desviación estandar basa
 
 ```{r}
 ggplot(dfTotal, aes(salida)) +
-  facet_wrap(~escenario) + 
+  facet_wrap(~escenario, ncol = 1) + 
   geom_boxplot() +
   theme_light()
 ```
 
 Para ambos escenarios presenta unos puntos atípicos en concordancia con el q-q plot que muestra algunas discrepancias en las colas de los datos con la normal.
+
+# Prueba de Hipótesis para Comparar Medias
+
+## t-test Dos Muestras Independientes
+
+Para probar la diferencia de medias de los escenarios A y B se plantean las siguientes hipótesis estadísticas:
+- $H_0$: no hay diferencias significativas entre las medias de cada escenario $\mu_A = \mu_B$ o lo que es equivalente $\mu_A - \mu_B = 0$.
+- $H_1$: ambas medias son significativamente distintas.
+
+```{r}
+t.test(dfEscenarioA$salida, dfEscenarioB$salida, var.equal = FALSE)
+```
+
+Dado que, el $p_{value}$ es mayor que el nivel de significancia $\alpha$, $0.8346 > 0.05$. Se concluye que ambas medias son estadísticamente iguales, por que no hay diferencias significativas que el mejoramiento de la tarea *E* contribuya al mejoramiento del proceso en general.
+
+# ANOVA de Una Vía para Datos Independientes
+
+La fomulación de hipótesis es similar a la prueba *t*.
+
+```{r}
+summary(aov(salida ~ escenario, dfTotal))
+```
+
+Los resultados para el anova de un solo factor y dos grupo $p_{value}=0.835$ es similar a la prueba *t*, ya que, esta última es un caso particular del ANOVA y se aplica para solo dos grupos de un solo factor.
 
 
 
