@@ -222,5 +222,11 @@ summary(aov(salida ~ escenario, dfTotal))
 
 Los resultados para el anova de un solo factor y dos grupo $p_{value}=0.835$ es similar a la prueba *t*, ya que, esta última es un caso particular del ANOVA y se aplica para solo dos grupos de un solo factor.
 
+# Conclusiones y Consideraciones Finales
+
+Para las simulaciones no se estimó el tamaño de la muestra, se realizaron 1000 simulaciones por cada escenario. La decisión de dicho número de simulaciones es totalmente arbitrario y considerar no tardar mucho tiempo en cada corrida.
+Para el escenario A se fija la semilla, emulando que esos datos ya han sucedido, son conocidos. Sin embargo, para el escenario B se supone que las corridas deben ser aleatorias (pseudoaleatorias), se fijó igual la semilla por la siguiente razone: las pruebas formales a medida que el tamaño de muestra es muy grande (>1000) se hacen más suceptibles a pequeñas variaciones por lo que en algunas corridas las pruebas formales sugieren que la distribución no es normal por ende se fijó una semilla y las pruebas arrojan normalidad. Sin embargo, al realizar pruebas gráficas para identificar las discrepancias se hallan valores atípicos en las colas pero para el análisis no se consideran impedimento para continuar. 
+Se concluye que las diferencias entre no mejorar y mejorar la tarea *E*, escenario A y B respectivamente, no generar diferencias significativas en el procesos en general, no representaría una mejora sustancial para realizar dicha inversión.
+
 
 
