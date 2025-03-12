@@ -7,7 +7,7 @@ output: html_document
 
 # Planteamiento del Problema
 
-Una empresa de ensamblaje de equipos de computo desea saber si, basados en sus tiempos medios y su varianza por tarea. La inversión en el mejoramiento de la tarea *E* represeta un mejoramiento estadísticamente significativo que compense la inversión asociada. Ya que, con base en el diagrama la tarea *E* no se encuentra en la ruta crítcia.
+Una empresa de ensamblaje de equipos de computo desea saber si, basados en sus tiempos medios y su desviación estandar por tarea, la inversión en el mejoramiento de la tarea *E* representa un mejoramiento estadísticamente significativo que compense la inversión asociada. Ya que, con base en el diagrama la tarea *E* no se encuentra en la ruta crítcia.
 
 Consideraciones iniciales:
 
@@ -17,7 +17,7 @@ Consideraciones iniciales:
 
 - Dado que niguna de las tareas es determinística es posible encontrar diferencias significativas para el proceso en general, ya que, puede hallarse que la distribución general del proceso se reajuste y genere un valor medio significativamente menor.
 
-- De las tareas se conocen su distribución, valor medio y varianza. La nueva máquina para la tarea *E* tiene una distribución similar (normal) con un valor medio de 3.6 [min]. Para establecer un criterio del beneficio de la máquina se van a realizar 1000 simulaciones del proceso.
+- De las tareas se conocen su distribución, valor medio y varianza. La nueva máquina para la tarea *E* tiene una distribución similar (normal) con un valor medio de 3.6 [min] y desviación estandar 2.0. Para establecer un criterio del beneficio de la máquina se van a realizar 1000 simulaciones del proceso.
 
 - Las tareas en paralelo son semejantes y cuentan con el mismo tiempo medio.
 
@@ -29,6 +29,7 @@ library(kableExtra)
 library(tidyverse)
 library(nortest)
 library(car)
+library(truncnorm)
 source("SimulacionProceso.R")
 ```
 
@@ -64,7 +65,7 @@ dfPredecesor <- data_frame(predecesor = c("A", "B", "C", "I", "J", "D", "E", "I"
                              c("B", "C", "I", "J", "K", "E", "I", "J", "K", 
                                "G", "H", "I", "J", "K"))
 # df del proceso.
-library(truncnorm)
+
 
 
 ```
