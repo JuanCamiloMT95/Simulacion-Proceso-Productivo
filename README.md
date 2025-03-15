@@ -1,5 +1,7 @@
 # Planteamiento del Problema
 
+Nota: ir al siguiente enlace para ver el proyecto terminado en html <https://juancamilomt95.github.io/Simulacion-Proceso-Productivo/SimulacionProceso.html>
+
 Una empresa de ensamblaje de equipos de computo desea saber si, basados en sus tiempos medios y su varianza por tarea, la inversión en el mejoramiento de la tarea *E* representa un mejoramiento estadísticamente significativo que compense la inversión asociada. Ya que, con base en el diagrama la tarea *E* no se encuentra en la ruta crítcia.
 
 Consideraciones iniciales:
