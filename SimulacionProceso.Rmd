@@ -1,5 +1,5 @@
 ---
-title: "Diagrama de Proceso de Equipos de Computo"
+title: "Simulación de Proceso Productivo de Equipos de Computo"
 Autor: "Juan Camilo Montealegre Tamayo"
 date: "2025-02-27"
 output: html_document
